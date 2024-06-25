@@ -1,5 +1,7 @@
 package com.mykafkaservice.kafkaservice.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mykafkaservice.kafkaservice.dto.MessageDto;
 import com.mykafkaservice.kafkaservice.entity.MessageEntity;
 import com.mykafkaservice.kafkaservice.repository.MessageRepository;
@@ -27,12 +29,23 @@ public class MessageServiceImpl implements MessageService {
       log.info("Creating new message from {} to {}", messageDto.from(), messageDto.to());
       log.info("Publishing new message from {} to {} to Kafka", messageDto.from(), messageDto.to());
 
-      kafkaProducerService.send("messages", message);
+      ObjectMapper objectMapper = new ObjectMapper();
+      try {
+        String messageAsString = objectMapper.writeValueAsString(message);
+        kafkaProducerService.send("messages", messageAsString);
+      } catch (JsonProcessingException e) {
+        log.info("Exception occurred");
+      }
 
     } else {
       log.info("Failed to create new message");
     }
 
+  }
+
+  @Override
+  public Iterable<MessageEntity> findAllMessages() {
+    return repository.findAll();
   }
 
 }

@@ -1,6 +1,5 @@
 package com.mykafkaservice.kafkaservice.service;
 
-import com.mykafkaservice.kafkaservice.entity.MessageEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +11,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaProducerService {
 
-  KafkaTemplate<String, MessageEntity> kafkaTemplate;
+  KafkaTemplate<String, String> kafkaTemplate;
 
   @Autowired
-  public KafkaProducerService(KafkaTemplate<String, MessageEntity> kafkaTemplate) {
+  public KafkaProducerService(KafkaTemplate<String, String> kafkaTemplate) {
     this.kafkaTemplate = kafkaTemplate;
   }
 
-  public void send(String topicName, MessageEntity value) {
+  public void send(String topicName, String value) {
     var future = kafkaTemplate.send(topicName, value);
     future.whenComplete((sendResult, exception) -> {
       if (exception != null) {
